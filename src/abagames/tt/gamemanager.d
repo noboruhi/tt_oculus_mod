@@ -228,6 +228,8 @@ public class GameState {
   int _grade;
   long _seed;
 
+  static const float PARALLAX = 0.001f;
+
   public this(Tunnel tunnel, Ship ship, ShotPool shots, BulletActorPool bullets,
               EnemyPool enemies, ParticlePool particles, FloatLetterPool floatLetters,
               StageManager stageManager) {
@@ -428,6 +430,16 @@ public class InGameState: GameState {
   }
 
   public override void draw() {
+    glViewport(0, 0, Screen.width / 2, Screen.height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-Screen.nearPlane - PARALLAX,
+              Screen.nearPlane - PARALLAX,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              0.1f, Screen.farPlane);
+    glMatrixMode(GL_MODELVIEW);
+
     glEnable(GL_CULL_FACE);
     tunnel.draw();
     glDisable(GL_CULL_FACE);
@@ -441,6 +453,31 @@ public class InGameState: GameState {
     bullets.draw();
     glEnable(GL_BLEND);
     shots.draw();
+
+    glViewport(Screen.width / 2, 0, Screen.width / 2, Screen.height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-Screen.nearPlane + PARALLAX,
+              Screen.nearPlane + PARALLAX,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              0.1f, Screen.farPlane);
+    glMatrixMode(GL_MODELVIEW);
+
+    glEnable(GL_CULL_FACE);
+    tunnel.draw();
+    glDisable(GL_CULL_FACE);
+    particles.draw();
+    enemies.draw();
+    ship.draw();
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    floatLetters.draw();
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glDisable(GL_BLEND);
+    bullets.draw();
+    glEnable(GL_BLEND);
+    shots.draw();
+
   }
 
   public override void drawLuminous() {
@@ -647,11 +684,21 @@ public class TitleState: GameState {
       glEnable(GL_BLEND);
       shots.draw();
     }
-    glViewport(0, 0, Screen.width, Screen.height);
+    glViewport(0, 0, Screen.width / 2, Screen.height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-Screen.nearPlane,
-              Screen.nearPlane,
+    glFrustum(-Screen.nearPlane - PARALLAX,
+              Screen.nearPlane - PARALLAX,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              0.1f, Screen.farPlane);
+    glMatrixMode(GL_MODELVIEW);
+    titleManager.draw();
+    glViewport(Screen.width / 2, 0, Screen.width / 2, Screen.height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-Screen.nearPlane + PARALLAX,
+              Screen.nearPlane + PARALLAX,
               -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
               Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
               0.1f, Screen.farPlane);

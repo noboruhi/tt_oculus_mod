@@ -2,3 +2,5 @@ buildconsole.bat
 *.exe
 *.map
 *.obj
+dist
+*.prf
