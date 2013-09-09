@@ -205,6 +205,9 @@ public class GameManager: abagames.util.sdl.gamemanager.GameManager {
     glPopMatrix();
     screen.drawLuminous();
     screen.viewOrthoFixed();
+    glViewport(0, 0, Screen.width / 2, Screen.height);
+    state.drawFront();
+    glViewport(Screen.width / 2, 0, Screen.width / 2, Screen.height);
     state.drawFront();
     screen.viewPerspective();
   }
@@ -228,7 +231,7 @@ public class GameState {
   int _grade;
   long _seed;
 
-  static const float PARALLAX = 0.001f;
+  static const float PARALLAX = 0.03f;
 
   public this(Tunnel tunnel, Ship ship, ShotPool shots, BulletActorPool bullets,
               EnemyPool enemies, ParticlePool particles, FloatLetterPool floatLetters,
@@ -435,8 +438,8 @@ public class InGameState: GameState {
     glLoadIdentity();
     glFrustum(-Screen.nearPlane - PARALLAX,
               Screen.nearPlane - PARALLAX,
-              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
-              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
               0.1f, Screen.farPlane);
     glMatrixMode(GL_MODELVIEW);
 
@@ -459,8 +462,8 @@ public class InGameState: GameState {
     glLoadIdentity();
     glFrustum(-Screen.nearPlane + PARALLAX,
               Screen.nearPlane + PARALLAX,
-              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
-              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
               0.1f, Screen.farPlane);
     glMatrixMode(GL_MODELVIEW);
 
@@ -666,8 +669,42 @@ public class TitleState: GameState {
       if (rcr > 1)
         rcr = 1;
       glViewport(0, 0,
-                 cast(int) (Screen.width / 4 * (3 + rcr)),
+                 cast(int) (Screen.width / 4 / 2 * (3 + rcr)),
                  Screen.height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-Screen.nearPlane - PARALLAX,
+              Screen.nearPlane - PARALLAX,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              0.1f, Screen.farPlane);
+    glMatrixMode(GL_MODELVIEW);
+      glEnable(GL_CULL_FACE);
+      tunnel.draw();
+      tunnel.drawBackward();
+      glDisable(GL_CULL_FACE);
+      particles.draw();
+      enemies.draw();
+      passedEnemies.draw();
+      ship.draw();
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      floatLetters.draw();
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      glDisable(GL_BLEND);
+      bullets.draw();
+      glEnable(GL_BLEND);
+      shots.draw();
+      glViewport(Screen.width / 2, 0,
+                 cast(int) (Screen.width / 4 / 2 * (3 + rcr)),
+                 Screen.height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-Screen.nearPlane + PARALLAX,
+              Screen.nearPlane + PARALLAX,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              0.1f, Screen.farPlane);
+    glMatrixMode(GL_MODELVIEW);
       glEnable(GL_CULL_FACE);
       tunnel.draw();
       tunnel.drawBackward();
@@ -689,8 +726,8 @@ public class TitleState: GameState {
     glLoadIdentity();
     glFrustum(-Screen.nearPlane - PARALLAX,
               Screen.nearPlane - PARALLAX,
-              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
-              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
               0.1f, Screen.farPlane);
     glMatrixMode(GL_MODELVIEW);
     titleManager.draw();
@@ -699,8 +736,8 @@ public class TitleState: GameState {
     glLoadIdentity();
     glFrustum(-Screen.nearPlane + PARALLAX,
               Screen.nearPlane + PARALLAX,
-              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
-              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width,
+              -Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
+              Screen.nearPlane * cast(GLfloat) Screen.height / cast(GLfloat) Screen.width * 2.5,
               0.1f, Screen.farPlane);
     glMatrixMode(GL_MODELVIEW);
     titleManager.draw();

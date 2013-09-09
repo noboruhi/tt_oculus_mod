@@ -416,7 +416,7 @@ public class Ship: BulletTarget {
       epos.x = _eyePos.x;
       epos.y = -1.1f;
       epos.y += _relPos.y * 0.3f;
-      epos.z = 30.0f;
+      epos.z = 15.0f;
       Vector3 ep3 = tunnel.getPos(epos);
       ex = ep3.x;
       ey = ep3.y;
